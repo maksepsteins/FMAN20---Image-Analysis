@@ -106,12 +106,15 @@ vertkernel = 1/15*[0,1,1,1,0;
 vertfeatures = conv2(number,vertkernel,'same');
 vertfeatures = sum(sum(vertfeatures))/sum(sum(number));
 
-center_of_mass = regionprops(number, 'Centroid');
-center_of_mass = center_of_mass.Centroid - [x_mid,y_mid];
+stats = regionprops(number, 'Circularity','Centroid', 'MinorAxisLength');
 
-circularity = regionprops(number,'Circularity');
-circularity = circularity.Circularity;
+center_of_mass = stats.Centroid - [x_mid,y_mid];
+
+circularity = stats.Circularity;
+
+minor_axis_length = stats.MinorAxisLength;
 
 features = [nbrholes,center_of_mass(1), center_of_mass(2), circularity, vertproportionaldensity,...
-    hozproportionaldensity, midcolumndensity,midrowdensity, hozfeatures,vertfeatures];
+    hozproportionaldensity, midcolumndensity,midrowdensity, hozfeatures,vertfeatures,...
+    minor_axis_length];
 

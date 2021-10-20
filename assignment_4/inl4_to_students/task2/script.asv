@@ -1,0 +1,37 @@
+load('heart_data.mat');
+
+mean_background = mean(background_values);
+std_background = std(background_values);
+
+mean_chamber = mean(chamber_values);
+std_chamber = std(chamber_values);
+
+[height,width] = size(im);
+
+edges = edges4connected(width,height);
+
+%reshaped_im = reshape(im,[height*width,1]);
+
+weight_graph = containers.Map; 
+
+
+for v = 1:height*width
+    weight_graph(num2str(v)) = containers.Map; 
+    neighbours_indices = find(edges(:,1) == v| edges(:,2) == v); 
+    neighbours = zeros(1, max(size(neighbours_indices))); 
+    
+    for i=1:max(size(neighbours_indices))
+        neighbours(i) = edges(neighbours_indices(i)); 
+    end 
+    
+    for n=1:max(size(neighbours))
+        neighbour = neighbours(n);
+        contrast = im(v) - im(neighbour); 
+        
+        node = weight_graph(num2str(v)); 
+        node(num2str(neighbour)) = contrast;
+        weight_graph(num2str(v)) = node; 
+    end
+end
+
+k = weight_graph; 
